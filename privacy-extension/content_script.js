@@ -7,8 +7,11 @@
 // Listen for messages from the MAIN world script
 window.addEventListener('message', (event) => {
   if (event.source !== window) return;
-  if (event.data.type && event.data.type === 'PRIVACY_EXT_GEO') {
+
+  if (event.data.type === 'PRIVACY_EXT_GEO') {
     chrome.runtime.sendMessage({ type: 'GEOLOCATION_ATTEMPT' });
+  } else if (event.data.type === 'PRIVACY_EXT_FINGERPRINT') {
+    chrome.runtime.sendMessage({ type: 'FINGERPRINTING_ATTEMPT', method: event.data.method });
   }
 });
 

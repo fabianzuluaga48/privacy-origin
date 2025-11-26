@@ -6,6 +6,7 @@ chrome.runtime.onInstalled.addListener(() => {
     networkRequests: [],
     cookies: [],
     geolocationAttempts: [],
+    fingerprintingAttempts: [],
     formData: [],
     globalStats: {
       trackers: {}, // { "google.com": { count: 0, sites: [] } }
@@ -43,13 +44,14 @@ function updateGlobalStats(trackerDomain, currentSite) {
 // Clear data for a tab when it navigates
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (changeInfo.status === 'loading') {
-    chrome.storage.local.get(['networkRequests', 'cookies', 'geolocationAttempts', 'formData'], (result) => {
+    chrome.storage.local.get(['networkRequests', 'cookies', 'geolocationAttempts', 'fingerprintingAttempts', 'formData'], (result) => {
       const clean = (arr) => (arr || []).filter(item => item.tabId !== tabId);
 
       chrome.storage.local.set({
         networkRequests: clean(result.networkRequests),
         cookies: clean(result.cookies),
         geolocationAttempts: clean(result.geolocationAttempts),
+        fingerprintingAttempts: clean(result.fingerprintingAttempts),
         formData: clean(result.formData)
       });
     });
@@ -152,6 +154,21 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         timeStamp: Date.now()
       });
       chrome.storage.local.set({ geolocationAttempts: attempts });
+    });
+  } else if (message.type === 'FINGERPRINTING_ATTEMPT') {
+    chrome.storage.local.get(['fingerprintingAttempts'], (result) => {
+      const attempts = result.fingerprintingAttempts || [];
+      // Debounce: check if we logged this recently (last 1s) for this tab
+      const lastAttempt = attempts[attempts.length - 1];
+      if (!lastAttempt || lastAttempt.tabId !== sender.tab.id || (Date.now() - lastAttempt.timeStamp > 1000)) {
+        attempts.push({
+          url: sender.tab.url,
+          method: message.method,
+          tabId: sender.tab.id,
+          timeStamp: Date.now()
+        });
+        chrome.storage.local.set({ fingerprintingAttempts: attempts });
+      }
     });
   } else if (message.type === 'FORM_SUBMISSION') {
     chrome.storage.local.get(['formData'], (result) => {

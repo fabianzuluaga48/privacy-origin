@@ -32,7 +32,7 @@
         "<all_urls>"
       ],
       "js": [
-        "hook_geolocation.js"
+        "injected_hooks.js"
       ],
       "run_at": "document_start",
       "world": "MAIN"
