@@ -2,6 +2,11 @@
   "manifest_version": 3,
   "name": "Privacy Origin",
   "version": "1.0.0",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "privacy-origin@example.com"
+    }
+  },
   "description": "Educates users about data tracking and privacy without blocking functionality. See what websites collect about you.",
   "permissions": [
     "webRequest",
@@ -13,7 +18,7 @@
     "<all_urls>"
   ],
   "background": {
-    "service_worker": "background.js"
+    "scripts": ["background.js"]
   },
   "content_scripts": [
     {
