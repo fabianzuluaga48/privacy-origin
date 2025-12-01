@@ -17,8 +17,12 @@
   "host_permissions": [
     "<all_urls>"
   ],
+  "optional_permissions": [
+    "webNavigation"
+  ],
   "background": {
-    "scripts": ["background.js"]
+    "service_worker": "background.js",
+    "type": "module"
   },
   "content_scripts": [
     {

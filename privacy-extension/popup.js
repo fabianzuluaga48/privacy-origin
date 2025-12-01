@@ -27,6 +27,122 @@ function getTrackerInfo(hostname) {
   return null;
 }
 
+// Graph incerementation logic 
+function chooseBucketConfig(tabAgeMs) {
+  const hour = 3600_000;
+  const day = 24 * hour;
+
+  if (tabAgeMs <= 4 * hour) {
+    const bucketSizeMs = hour;
+    const numBuckets = Math.max(1, Math.ceil(tabAgeMs / bucketSizeMs));
+    return { bucketSizeMs, numBuckets };
+  }
+
+  if (tabAgeMs <= 24 * hour) {
+    const bucketSizeMs = 4 * hour;
+    const numBuckets = Math.max(1, Math.ceil(tabAgeMs / bucketSizeMs));
+    return { bucketSizeMs, numBuckets };
+  }
+
+  if (tabAgeMs <= 7 * day) {
+    const bucketSizeMs = day;
+    const numBuckets = Math.max(1, Math.ceil(tabAgeMs / bucketSizeMs));
+    return { bucketSizeMs, numBuckets };
+  }
+
+  return { bucketSizeMs: day, numBuckets: 7 };
+}
+
+function computeBuckets(requests) {
+  const now = Date.now();
+
+  let startTs = now;
+  if ((requests || []).length > 0) {
+    startTs = Math.min(...requests.map(r => r.timeStamp));
+  } else {
+    startTs = now - 3600_000; // fallback: last 1 hour
+  }
+
+  const duration = Math.max(1, now - startTs);
+  const { bucketSizeMs, numBuckets } = chooseBucketConfig(duration);
+
+  const alignedStart = Math.floor(startTs / bucketSizeMs) * bucketSizeMs;
+  const buckets = new Array(numBuckets).fill(0);
+
+  requests.forEach((r) => {
+    if (!r.timeStamp) return;
+    let idx = Math.floor((r.timeStamp - alignedStart) / bucketSizeMs);
+    if (idx < 0) idx = 0;
+    if (idx >= numBuckets) idx = numBuckets - 1;
+    buckets[idx]++;
+  });
+
+  const labels = buckets.map((_, i) => {
+    const bucketStart = alignedStart + i * bucketSizeMs;
+    const bucketStartDt = new Date(bucketStart);
+
+    if (bucketSizeMs < 24 * 3600_000) {
+      return bucketStartDt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    } else {
+      return bucketStartDt.toLocaleDateString([], { month: 'short', day: 'numeric' });
+    }
+  });
+
+  return { buckets, labels, startTs: alignedStart, bucketSizeMs };
+}
+
+
+function renderNetworkGraph(buckets, labels, bucketSizeMs) {
+  const container = document.getElementById('network-graph');
+  const legend = document.getElementById('network-graph-legend');
+
+  if (!container || !legend) return;
+
+  container.innerHTML = '';
+  legend.innerHTML = '';
+
+  const max = Math.max(1, ...buckets);
+  const barMaxHeight = 56;
+
+  buckets.forEach((count, i) => {
+    const h = Math.round((count / max) * barMaxHeight) + 8;
+    const bar = document.createElement('div');
+    bar.className = 'ng-bar';
+    bar.style.height = `${h}px`;
+    bar.dataset.count = count;
+    bar.dataset.label = labels[i];
+
+    const tip = document.createElement('div');
+    tip.className = 'ng-tooltip';
+    tip.textContent = `${labels[i]} — ${count} req${count === 1 ? '' : 's'}`;
+    bar.appendChild(tip);
+
+    container.appendChild(bar);
+  });
+
+  const first = labels[0] || '';
+  const total = buckets.reduce((s, x) => s + x, 0);
+  const avgPerBucket = (total / buckets.length).toFixed(1);
+  const unit = bucketSizeMs < 24 * 3600_000
+    ? `per ${bucketSizeMs / 3600_000}h`
+    : 'per day';
+
+  legend.innerHTML = `
+    <div>
+      <span class="legend-start">${first}</span>
+    </div>
+    <div>
+      <span class="legend-total">Total: ${total}</span>
+    </div>
+    <div>
+      <span class="legend-average">Avg: ${avgPerBucket} ${unit}</span>
+    </div>
+  `;
+
+  document.getElementById('network-graph-section').style.display = 'block';
+}
+
+
 function updateUI() {
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     const currentTab = tabs[0];
@@ -94,6 +210,14 @@ function updateUI() {
         detectedTrackers,
         currentUrl: currentTab.url
       });
+      
+      try {
+        const { buckets, labels, bucketSizeMs } = computeBuckets(requests);
+        renderNetworkGraph(buckets, labels, bucketSizeMs);
+      } catch (e) {
+        console.error('Error rendering network graph', e);
+        document.getElementById('network-graph-section').style.display = 'none';
+      }
     });
   });
 }

@@ -282,6 +282,58 @@
     .see-all:hover {
       color: #60a5fa;
     }
+
+    #network-graph {
+      display: flex;
+      align-items: flex-end;
+      height: 72px;
+      gap: 4px;
+    }
+
+    #network-graph-legend {
+      display: block; 
+      font-size: 12px;
+      margin-top: 4px;
+    }
+
+    #network-graph-legend > div {
+      display: flex;
+      justify-content: space-between; 
+      margin-bottom: 2px; 
+    }
+
+    #network-graph-legend > div:last-child {
+      margin-bottom: 0;
+    }
+
+
+    .ng-bar {
+      width: 10px;
+      background: var(--accent-color, #4a90e2);
+      border-radius: 3px;
+      position: relative;
+    }
+
+    .ng-bar:hover .ng-tooltip {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .ng-tooltip {
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #222;
+      color: #fff;
+      padding: 4px 6px;
+      font-size: 10px;
+      border-radius: 2px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+    }
+
   </style>
 </head>
 
@@ -340,6 +392,13 @@
       <p class="card-desc">Device identification attempts</p>
     </div>
   </div>
+
+  <div id="network-graph-section" style="display: none;">
+    <h3>Network Activity</h3>
+    <div id="network-graph" class="ng-container"></div>
+    <div id="network-graph-legend" class="ng-legend"></div>
+  </div>
+
 
   <div id="trackers-section" style="display: none;">
     <div class="section-header">Known Trackers Detected</div>
