@@ -56,50 +56,49 @@ function chooseBucketConfig(tabAgeMs) {
 function computeBuckets(requests) {
   const now = Date.now();
 
-  let startTs = now;
-  if ((requests || []).length > 0) {
-    startTs = Math.min(...requests.map(r => r.timeStamp));
-  } else {
-    startTs = now - 3600_000; // fallback: last 1 hour
-  }
+  let startTs = (requests?.length > 0)
+    ? Math.min(...requests.map(r => r.timeStamp))
+    : now - 3600_000; 
 
   const duration = Math.max(1, now - startTs);
   const { bucketSizeMs, numBuckets } = chooseBucketConfig(duration);
 
   const alignedStart = Math.floor(startTs / bucketSizeMs) * bucketSizeMs;
+
   const buckets = new Array(numBuckets).fill(0);
 
-  requests.forEach((r) => {
+  requests.forEach(r => {
     if (!r.timeStamp) return;
+
     let idx = Math.floor((r.timeStamp - alignedStart) / bucketSizeMs);
     if (idx < 0) idx = 0;
     if (idx >= numBuckets) idx = numBuckets - 1;
+
     buckets[idx]++;
   });
 
   const labels = buckets.map((_, i) => {
     const bucketStart = alignedStart + i * bucketSizeMs;
-    const bucketStartDt = new Date(bucketStart);
+    const dt = new Date(bucketStart);
 
-    if (bucketSizeMs < 24 * 3600_000) {
-      return bucketStartDt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    if (bucketSizeMs < 24 * 3600_000) { 
+      return dt.toLocaleTimeString([], { hourCycle: 'h23', hour: '2-digit', minute: '2-digit' });
     } else {
-      return bucketStartDt.toLocaleDateString([], { month: 'short', day: 'numeric' });
+      return dt.toLocaleDateString([], { month: 'short', day: 'numeric' });
     }
   });
 
   return { buckets, labels, startTs: alignedStart, bucketSizeMs };
 }
 
+function renderNetworkGraph(buckets, labels, bucketSizeMs, requests) {
 
-function renderNetworkGraph(buckets, labels, bucketSizeMs) {
   const container = document.getElementById('network-graph');
   const legend = document.getElementById('network-graph-legend');
 
   if (!container || !legend) return;
 
   container.innerHTML = '';
-  legend.innerHTML = '';
 
   const max = Math.max(1, ...buckets);
   const barMaxHeight = 56;
@@ -114,29 +113,34 @@ function renderNetworkGraph(buckets, labels, bucketSizeMs) {
 
     const tip = document.createElement('div');
     tip.className = 'ng-tooltip';
-    tip.textContent = `${labels[i]} — ${count} req${count === 1 ? '' : 's'}`;
+    tip.textContent = `${count} request${count === 1 ? '' : 's'}`;
     bar.appendChild(tip);
 
+    bar.addEventListener('mouseenter', () => {
+      tip.style.visibility = 'visible';
+    });
+
+    bar.addEventListener('mouseleave', () => {
+      tip.style.visibility = 'hidden';
+    });
+
+    bar.addEventListener('mousemove', (e) => {
+      tip.style.left = (e.clientX + 10) + 'px';
+      tip.style.top = (e.clientY - 20) + 'px';
+    });
+
     container.appendChild(bar);
+    
   });
 
+  const total = requests.length;
+  const avgPerBucket = (requests.length / buckets.length).toFixed(1);
   const first = labels[0] || '';
-  const total = buckets.reduce((s, x) => s + x, 0);
-  const avgPerBucket = (total / buckets.length).toFixed(1);
-  const unit = bucketSizeMs < 24 * 3600_000
-    ? `per ${bucketSizeMs / 3600_000}h`
-    : 'per day';
 
   legend.innerHTML = `
-    <div>
-      <span class="legend-start">${first}</span>
-    </div>
-    <div>
-      <span class="legend-total">Total: ${total}</span>
-    </div>
-    <div>
-      <span class="legend-average">Avg: ${avgPerBucket} ${unit}</span>
-    </div>
+    <div><span class="legend-start">${first}</span></div>
+    <div><span class="legend-total">Total: ${Math.round(total)}</span></div>
+    <div><span class="legend-average">Avg: ${avgPerBucket} per ${bucketSizeMs / 3600_000}h</span></div>
   `;
 
   document.getElementById('network-graph-section').style.display = 'block';
@@ -213,7 +217,7 @@ function updateUI() {
       
       try {
         const { buckets, labels, bucketSizeMs } = computeBuckets(requests);
-        renderNetworkGraph(buckets, labels, bucketSizeMs);
+        renderNetworkGraph(buckets, labels, bucketSizeMs, requests);
       } catch (e) {
         console.error('Error rendering network graph', e);
         document.getElementById('network-graph-section').style.display = 'none';
