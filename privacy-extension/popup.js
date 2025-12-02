@@ -56,52 +56,71 @@ function chooseBucketConfig(tabAgeMs) {
 function computeBuckets(requests) {
   const now = Date.now();
 
-  let startTs = (requests?.length > 0)
+  let earliest = (requests?.length > 0)
     ? Math.min(...requests.map(r => r.timeStamp))
-    : now - 3600_000; 
+    : now - 3600_000;
 
-  const duration = Math.max(1, now - startTs);
-  const { bucketSizeMs, numBuckets } = chooseBucketConfig(duration);
+  const duration = now - earliest;
 
-  const alignedStart = Math.floor(startTs / bucketSizeMs) * bucketSizeMs;
+  const { bucketSizeMs } = chooseBucketConfig(duration);
+
+  const alignedStart = Math.floor(earliest / bucketSizeMs) * bucketSizeMs;
+
+  const numBuckets = Math.max(1, Math.ceil((now - alignedStart) / bucketSizeMs));
 
   const buckets = new Array(numBuckets).fill(0);
 
   requests.forEach(r => {
     if (!r.timeStamp) return;
-
     let idx = Math.floor((r.timeStamp - alignedStart) / bucketSizeMs);
     if (idx < 0) idx = 0;
     if (idx >= numBuckets) idx = numBuckets - 1;
-
     buckets[idx]++;
   });
 
   const labels = buckets.map((_, i) => {
-    const bucketStart = alignedStart + i * bucketSizeMs;
-    const dt = new Date(bucketStart);
+    const start = alignedStart + i * bucketSizeMs;
+    const dt = new Date(start);
 
-    if (bucketSizeMs < 24 * 3600_000) { 
-      return dt.toLocaleTimeString([], { hourCycle: 'h23', hour: '2-digit', minute: '2-digit' });
+    if (bucketSizeMs < 24 * 3600_000) {
+      return dt.toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+        hourCycle: 'h23'
+      });
     } else {
       return dt.toLocaleDateString([], { month: 'short', day: 'numeric' });
     }
   });
 
-  return { buckets, labels, startTs: alignedStart, bucketSizeMs };
+  return { buckets, labels, bucketSizeMs };
 }
 
-function renderNetworkGraph(buckets, labels, bucketSizeMs, requests) {
 
+function renderNetworkGraph(buckets, labels, bucketSizeMs) {
   const container = document.getElementById('network-graph');
   const legend = document.getElementById('network-graph-legend');
-
   if (!container || !legend) return;
 
   container.innerHTML = '';
 
   const max = Math.max(1, ...buckets);
   const barMaxHeight = 56;
+
+  container.style.display = "grid";
+  container.style.gridTemplateColumns = `repeat(${buckets.length}, 1fr)`;
+
+  const labelContainer = document.getElementById('network-graph-labels');
+  labelContainer.style.display = "grid";
+  labelContainer.style.gridTemplateColumns = `repeat(${buckets.length}, 1fr)`;
+  labelContainer.innerHTML = '';
+
+  labels.forEach(label => {
+    const lbl = document.createElement('div');
+    lbl.className = 'ng-label';
+    lbl.textContent = label;
+    labelContainer.appendChild(lbl);
+  });
 
   buckets.forEach((count, i) => {
     const h = Math.round((count / max) * barMaxHeight) + 8;
@@ -113,33 +132,26 @@ function renderNetworkGraph(buckets, labels, bucketSizeMs, requests) {
 
     const tip = document.createElement('div');
     tip.className = 'ng-tooltip';
-    tip.textContent = `${count} request${count === 1 ? '' : 's'}`;
+    tip.textContent = `${count} request${count === 1 ? '' : 's'}`; // static count
     bar.appendChild(tip);
 
-    bar.addEventListener('mouseenter', () => {
-      tip.style.visibility = 'visible';
-    });
-
-    bar.addEventListener('mouseleave', () => {
-      tip.style.visibility = 'hidden';
-    });
-
+    bar.addEventListener('mouseenter', () => { tip.style.visibility = 'visible'; });
+    bar.addEventListener('mouseleave', () => { tip.style.visibility = 'hidden'; });
     bar.addEventListener('mousemove', (e) => {
       tip.style.left = (e.clientX + 10) + 'px';
       tip.style.top = (e.clientY - 20) + 'px';
     });
 
     container.appendChild(bar);
-    
   });
 
-  const total = requests.length;
-  const avgPerBucket = (requests.length / buckets.length).toFixed(1);
+  // Compute total and average from buckets themselves
+  const total = buckets.reduce((sum, c) => sum + c, 0);
+  const avgPerBucket = (total / buckets.length).toFixed(1);
   const first = labels[0] || '';
 
   legend.innerHTML = `
-    <div><span class="legend-start">${first}</span></div>
-    <div><span class="legend-total">Total: ${Math.round(total)}</span></div>
+    <div><span class="legend-total">Total: ${total}</span></div>
     <div><span class="legend-average">Avg: ${avgPerBucket} per ${bucketSizeMs / 3600_000}h</span></div>
   `;
 
@@ -217,7 +229,7 @@ function updateUI() {
       
       try {
         const { buckets, labels, bucketSizeMs } = computeBuckets(requests);
-        renderNetworkGraph(buckets, labels, bucketSizeMs, requests);
+        renderNetworkGraph(buckets, labels, bucketSizeMs);
       } catch (e) {
         console.error('Error rendering network graph', e);
         document.getElementById('network-graph-section').style.display = 'none';

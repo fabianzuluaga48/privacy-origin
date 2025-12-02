@@ -313,6 +313,19 @@
       margin-bottom: 0;
     }
 
+    #network-graph-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 4px;
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+
+    .ng-label {
+      width: 20px; 
+      text-align: center;
+    }
+
     .ng-bar {
       width: 10px;
       background: var(--accent-color, #4a90e2);
@@ -406,6 +419,7 @@
   <div id="network-graph-section" style="display: none;">
     <h3>Network Activity</h3>
     <div id="network-graph" class="ng-container"></div>
+    <div id="network-graph-labels"></div>
     <div id="network-graph-legend" class="ng-legend"></div>
   </div>
 
