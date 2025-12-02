@@ -8,18 +8,9 @@
     }
   },
   "description": "Educates users about data tracking and privacy without blocking functionality. See what websites collect about you.",
-  "permissions": [
-    "webRequest",
-    "storage",
-    "tabs",
-    "activeTab"
-  ],
-  "host_permissions": [
-    "<all_urls>"
-  ],
-  "optional_permissions": [
-    "webNavigation"
-  ],
+  "permissions": ["webRequest", "storage", "tabs", "activeTab"],
+  "host_permissions": ["<all_urls>"],
+  "optional_permissions": ["webNavigation"],
   "background": {
     "service_worker": "background.js",
     "type": "module"

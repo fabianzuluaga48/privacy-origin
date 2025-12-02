@@ -1,521 +1,564 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Privacy Report - Privacy Origin</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg-color: #0f172a;
+        --card-bg: #1e293b;
+        --text-primary: #f8fafc;
+        --text-secondary: #94a3b8;
+        --accent-color: #3b82f6;
+        --success-color: #10b981;
+        --warning-color: #f59e0b;
+        --danger-color: #ef4444;
+      }
 
-<head>
-  <meta charset="UTF-8">
-  <title>Privacy Report - Privacy Origin</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg-color: #0f172a;
-      --card-bg: #1e293b;
-      --text-primary: #f8fafc;
-      --text-secondary: #94a3b8;
-      --accent-color: #3b82f6;
-      --success-color: #10b981;
-      --warning-color: #f59e0b;
-      --danger-color: #ef4444;
-    }
+      * {
+        box-sizing: border-box;
+      }
 
-    * {
-      box-sizing: border-box;
-    }
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: var(--bg-color);
+        margin: 0;
+        padding: 40px;
+        color: var(--text-primary);
+        min-height: 100vh;
+        line-height: 1.6;
+      }
 
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: var(--bg-color);
-      margin: 0;
-      padding: 40px;
-      color: var(--text-primary);
-      min-height: 100vh;
-      line-height: 1.6;
-    }
+      .container {
+        max-width: 1000px;
+        margin: 0 auto;
+      }
 
-    .container {
-      max-width: 1000px;
-      margin: 0 auto;
-    }
+      .header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 40px;
+        padding-bottom: 24px;
+        border-bottom: 1px solid #334155;
+      }
 
-    .header {
-      display: flex;
-      align-items: center;
-      margin-bottom: 40px;
-      padding-bottom: 24px;
-      border-bottom: 1px solid #334155;
-    }
+      .shield-icon {
+        width: 56px;
+        height: 56px;
+        margin-right: 24px;
+        border-radius: 12px;
+      }
 
-    .shield-icon {
-      width: 56px;
-      height: 56px;
-      margin-right: 24px;
-      border-radius: 12px;
-    }
+      .header-text h1 {
+        font-size: 28px;
+        font-weight: 700;
+        margin: 0 0 8px 0;
+        color: var(--text-primary);
+      }
 
-    .header-text h1 {
-      font-size: 28px;
-      font-weight: 700;
-      margin: 0 0 8px 0;
-      color: var(--text-primary);
-    }
+      .header-text p {
+        font-size: 15px;
+        color: var(--text-secondary);
+        margin: 0;
+      }
 
-    .header-text p {
-      font-size: 15px;
-      color: var(--text-secondary);
-      margin: 0;
-    }
+      .tabs {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 32px;
+        border-bottom: 1px solid #334155;
+        padding-bottom: 16px;
+      }
 
-    .tabs {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 32px;
-      border-bottom: 1px solid #334155;
-      padding-bottom: 16px;
-    }
+      .tab {
+        padding: 10px 20px;
+        background: transparent;
+        border: 1px solid #334155;
+        border-radius: 8px;
+        color: var(--text-secondary);
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.2s;
+      }
 
-    .tab {
-      padding: 10px 20px;
-      background: transparent;
-      border: 1px solid #334155;
-      border-radius: 8px;
-      color: var(--text-secondary);
-      cursor: pointer;
-      font-size: 14px;
-      font-weight: 500;
-      transition: all 0.2s;
-    }
+      .tab:hover {
+        background: #334155;
+        color: var(--text-primary);
+      }
 
-    .tab:hover {
-      background: #334155;
-      color: var(--text-primary);
-    }
+      .tab.active {
+        background: var(--accent-color);
+        border-color: var(--accent-color);
+        color: white;
+      }
 
-    .tab.active {
-      background: var(--accent-color);
-      border-color: var(--accent-color);
-      color: white;
-    }
+      .tab-content {
+        display: none;
+      }
 
-    .tab-content {
-      display: none;
-    }
+      .tab-content.active {
+        display: block;
+      }
 
-    .tab-content.active {
-      display: block;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-      margin-bottom: 32px;
-    }
-
-    @media (max-width: 768px) {
       .grid {
-        grid-template-columns: 1fr;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        margin-bottom: 32px;
       }
-    }
 
-    .card {
-      background: var(--card-bg);
-      border-radius: 12px;
-      padding: 24px;
-      border: 1px solid #334155;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
+      @media (max-width: 768px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
 
-    .card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-    }
+      .card {
+        background: var(--card-bg);
+        border-radius: 12px;
+        padding: 24px;
+        border: 1px solid #334155;
+        transition: transform 0.2s, box-shadow 0.2s;
+      }
 
-    .card h3 {
-      font-size: 12px;
-      color: var(--text-secondary);
-      margin: 0 0 12px 0;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
+      .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      }
 
-    .big-number {
-      font-size: 36px;
-      font-weight: 700;
-      color: var(--text-primary);
-    }
+      .card h3 {
+        font-size: 12px;
+        color: var(--text-secondary);
+        margin: 0 0 12px 0;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
 
-    .card-full {
-      grid-column: 1 / -1;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+      .big-number {
+        font-size: 36px;
+        font-weight: 700;
+        color: var(--text-primary);
+      }
 
-    .card-full .big-number {
-      font-size: 28px;
-      max-width: 60%;
-      word-break: break-all;
-    }
+      .card-full {
+        grid-column: 1 / -1;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
 
-    .tracker-list {
-      background: var(--card-bg);
-      border-radius: 12px;
-      overflow: hidden;
-      border: 1px solid #334155;
-    }
+      .card-full .big-number {
+        font-size: 28px;
+        max-width: 60%;
+        word-break: break-all;
+      }
 
-    .list-header {
-      background: #0f172a;
-      padding: 14px 20px;
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--text-secondary);
-      display: grid;
-      grid-template-columns: 2fr 1fr 1fr;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
+      .tracker-list {
+        background: var(--card-bg);
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid #334155;
+      }
 
-    .list-item {
-      padding: 16px 20px;
-      border-bottom: 1px solid #334155;
-      display: grid;
-      grid-template-columns: 2fr 1fr 1fr;
-      align-items: center;
-      transition: background-color 0.1s;
-    }
+      .list-header {
+        background: #0f172a;
+        padding: 14px 20px;
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--text-secondary);
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
 
-    .list-item:last-child {
-      border-bottom: none;
-    }
+      .list-item {
+        padding: 16px 20px;
+        border-bottom: 1px solid #334155;
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr;
+        align-items: center;
+        transition: background-color 0.1s;
+      }
 
-    .list-item:hover {
-      background-color: #334155;
-    }
+      .list-item:last-child {
+        border-bottom: none;
+      }
 
-    .tracker-name {
-      font-weight: 500;
-      color: var(--text-primary);
-    }
+      .list-item:hover {
+        background-color: #334155;
+      }
 
-    .tracker-category {
-      font-size: 11px;
-      padding: 4px 10px;
-      border-radius: 6px;
-      text-transform: uppercase;
-      letter-spacing: 0.03em;
-      display: inline-block;
-    }
+      .tracker-name {
+        font-weight: 500;
+        color: var(--text-primary);
+      }
 
-    .tracker-category.analytics {
-      background: rgba(59, 130, 246, 0.15);
-      color: #60a5fa;
-    }
+      .tracker-category {
+        font-size: 11px;
+        padding: 4px 10px;
+        border-radius: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        display: inline-block;
+      }
 
-    .tracker-category.advertising {
-      background: rgba(239, 68, 68, 0.15);
-      color: #f87171;
-    }
+      .tracker-category.analytics {
+        background: rgba(59, 130, 246, 0.15);
+        color: #60a5fa;
+      }
 
-    .tracker-category.social {
-      background: rgba(168, 85, 247, 0.15);
-      color: #c084fc;
-    }
+      .tracker-category.advertising {
+        background: rgba(239, 68, 68, 0.15);
+        color: #f87171;
+      }
 
-    .tracker-category.unknown {
-      background: rgba(148, 163, 184, 0.15);
-      color: #94a3b8;
-    }
+      .tracker-category.social {
+        background: rgba(168, 85, 247, 0.15);
+        color: #c084fc;
+      }
 
-    .tracker-count {
-      background: #334155;
-      color: var(--text-primary);
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 600;
-      display: inline-block;
-    }
+      .tracker-category.unknown {
+        background: rgba(148, 163, 184, 0.15);
+        color: #94a3b8;
+      }
 
-    .empty-state {
-      text-align: center;
-      padding: 60px 20px;
-      color: var(--text-secondary);
-    }
+      .tracker-count {
+        background: #334155;
+        color: var(--text-primary);
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        display: inline-block;
+      }
 
-    .empty-state .icon {
-      font-size: 48px;
-      margin-bottom: 16px;
-      opacity: 0.5;
-    }
+      .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: var(--text-secondary);
+      }
 
-    .empty-state h3 {
-      font-size: 18px;
-      color: var(--text-primary);
-      margin: 0 0 8px 0;
-    }
+      .empty-state .icon {
+        font-size: 48px;
+        margin-bottom: 16px;
+        opacity: 0.5;
+      }
 
-    .empty-state p {
-      margin: 0;
-      font-size: 14px;
-    }
+      .empty-state h3 {
+        font-size: 18px;
+        color: var(--text-primary);
+        margin: 0 0 8px 0;
+      }
 
-    /* Education Section */
-    .education-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 20px;
-    }
+      .empty-state p {
+        margin: 0;
+        font-size: 14px;
+      }
 
-    @media (max-width: 768px) {
+      /* Education Section */
       .education-grid {
-        grid-template-columns: 1fr;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
       }
-    }
 
-    .education-card {
-      background: var(--card-bg);
-      border-radius: 12px;
-      padding: 24px;
-      border: 1px solid #334155;
-    }
+      @media (max-width: 768px) {
+        .education-grid {
+          grid-template-columns: 1fr;
+        }
+      }
 
-    .education-card h3 {
-      font-size: 16px;
-      color: var(--text-primary);
-      margin: 0 0 12px 0;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+      .education-card {
+        background: var(--card-bg);
+        border-radius: 12px;
+        padding: 24px;
+        border: 1px solid #334155;
+      }
 
-    .education-card h3 .icon {
-      font-size: 20px;
-    }
+      .education-card h3 {
+        font-size: 16px;
+        color: var(--text-primary);
+        margin: 0 0 12px 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
 
-    .education-card p {
-      color: var(--text-secondary);
-      font-size: 14px;
-      margin: 0 0 16px 0;
-    }
+      .education-card h3 .icon {
+        font-size: 20px;
+      }
 
-    .education-card ul {
-      margin: 0;
-      padding-left: 20px;
-      color: var(--text-secondary);
-      font-size: 13px;
-    }
+      .education-card p {
+        color: var(--text-secondary);
+        font-size: 14px;
+        margin: 0 0 16px 0;
+      }
 
-    .education-card li {
-      margin-bottom: 8px;
-    }
+      .education-card ul {
+        margin: 0;
+        padding-left: 20px;
+        color: var(--text-secondary);
+        font-size: 13px;
+      }
 
-    .resource-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      color: var(--accent-color);
-      text-decoration: none;
-      font-size: 13px;
-      margin-top: 12px;
-    }
+      .education-card li {
+        margin-bottom: 8px;
+      }
 
-    .resource-link:hover {
-      text-decoration: underline;
-    }
+      .resource-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: var(--accent-color);
+        text-decoration: none;
+        font-size: 13px;
+        margin-top: 12px;
+      }
 
-    .actions {
-      display: flex;
-      gap: 12px;
-      margin-top: 32px;
-    }
+      .resource-link:hover {
+        text-decoration: underline;
+      }
 
-    .btn {
-      padding: 12px 24px;
-      border-radius: 8px;
-      font-size: 14px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s;
-      border: none;
-    }
+      .actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 32px;
+      }
 
-    .btn-primary {
-      background: var(--accent-color);
-      color: white;
-    }
+      .btn {
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: none;
+      }
 
-    .btn-primary:hover {
-      background: #2563eb;
-    }
+      .btn-primary {
+        background: var(--accent-color);
+        color: white;
+      }
 
-    .btn-secondary {
-      background: #334155;
-      color: var(--text-primary);
-      border: 1px solid #475569;
-    }
+      .btn-primary:hover {
+        background: #2563eb;
+      }
 
-    .btn-secondary:hover {
-      background: #475569;
-    }
+      .btn-secondary {
+        background: #334155;
+        color: var(--text-primary);
+        border: 1px solid #475569;
+      }
 
-    .btn-danger {
-      background: rgba(239, 68, 68, 0.15);
-      color: var(--danger-color);
-      border: 1px solid var(--danger-color);
-    }
+      .btn-secondary:hover {
+        background: #475569;
+      }
 
-    .btn-danger:hover {
-      background: var(--danger-color);
-      color: white;
-    }
-  </style>
-</head>
+      .btn-danger {
+        background: rgba(239, 68, 68, 0.15);
+        color: var(--danger-color);
+        border: 1px solid var(--danger-color);
+      }
 
-<body>
-  <div class="container">
-    <div class="header">
-      <img src="images/icon128.png" class="shield-icon" alt="Privacy Origin">
-      <div class="header-text">
-        <h1>Privacy Report</h1>
-        <p>Comprehensive analysis of tracking activity across your browsing sessions</p>
+      .btn-danger:hover {
+        background: var(--danger-color);
+        color: white;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="header">
+        <img
+          src="images/icon128.png"
+          class="shield-icon"
+          alt="Privacy Origin"
+        />
+        <div class="header-text">
+          <h1>Privacy Report</h1>
+          <p>
+            Comprehensive analysis of tracking activity across your browsing
+            sessions
+          </p>
+        </div>
       </div>
-    </div>
 
-    <div class="tabs">
+      <div class="tabs">
         <button class="tab active" data-tab="overview">Overview</button>
         <button class="tab" data-tab="learn">Learn More</button>
         <button class="tab" data-tab="trackers">All Trackers</button>
-    </div>
+      </div>
 
-    <!-- Overview Tab -->
-    <div id="overview" class="tab-content active">
-      <div class="grid">
-        <div class="card">
-          <h3>Unique Trackers</h3>
-          <div id="total-trackers" class="big-number">0</div>
-        </div>
-        <div class="card">
-          <h3>Sites with Trackers</h3>
-          <div id="websites-tracked" class="big-number">0%</div>
-        </div>
-        <div class="card">
-          <h3>Total Requests</h3>
-          <div id="total-requests" class="big-number">0</div>
-        </div>
-        <div class="card card-full">
-          <div>
-            <h3>Most Active Tracker</h3>
-            <p id="top-tracker-desc" style="color: var(--text-secondary); margin: 0; font-size: 14px;">
-              seen across 0 websites
-            </p>
+      <!-- Overview Tab -->
+      <div id="overview" class="tab-content active">
+        <div class="grid">
+          <div class="card">
+            <h3>Unique Trackers</h3>
+            <div id="total-trackers" class="big-number">0</div>
           </div>
-          <div id="top-tracker" class="big-number">None yet</div>
+          <div class="card">
+            <h3>Sites with Trackers</h3>
+            <div id="websites-tracked" class="big-number">0%</div>
+          </div>
+          <div class="card">
+            <h3>Total Requests</h3>
+            <div id="total-requests" class="big-number">0</div>
+          </div>
+          <div class="card card-full">
+            <div>
+              <h3>Most Active Tracker</h3>
+              <p
+                id="top-tracker-desc"
+                style="color: var(--text-secondary); margin: 0; font-size: 14px"
+              >
+                seen across 0 websites
+              </p>
+            </div>
+            <div id="top-tracker" class="big-number">None yet</div>
+          </div>
+        </div>
+
+        <h2 style="font-size: 18px; margin-bottom: 16px">
+          Top Trackers by Reach
+        </h2>
+        <div class="tracker-list">
+          <div class="list-header">
+            <span>Tracker Domain</span>
+            <span>Category</span>
+            <span>Sites</span>
+          </div>
+          <div id="tracker-rows"></div>
+        </div>
+
+        <div class="actions">
+          <button id="clear-all-btn" class="btn btn-danger">
+            Clear All Data
+          </button>
         </div>
       </div>
 
-      <h2 style="font-size: 18px; margin-bottom: 16px;">Top Trackers by Reach</h2>
-      <div class="tracker-list">
-        <div class="list-header">
-          <span>Tracker Domain</span>
-          <span>Category</span>
-          <span>Sites</span>
+      <!-- Trackers Tab -->
+      <div id="trackers" class="tab-content">
+        <div id="all-trackers-list" class="tracker-list">
+          <div class="list-header">
+            <span>Tracker Domain</span>
+            <span>Category</span>
+            <span>Sites</span>
+          </div>
+          <div id="all-tracker-rows"></div>
         </div>
-        <div id="tracker-rows"></div>
       </div>
 
-      <div class="actions">
-        <button id="clear-all-btn" class="btn btn-danger">Clear All Data</button>
+      <!-- Learn More Tab -->
+      <div id="learn" class="tab-content">
+        <div class="education-grid">
+          <div class="education-card">
+            <h3><span class="icon">🍪</span> Third-Party Cookies</h3>
+            <p>
+              Cookies set by domains other than the one you're visiting. They
+              allow advertisers to track you across different websites.
+            </p>
+            <ul>
+              <li>Enable "Block third-party cookies" in browser settings</li>
+              <li>Use browser extensions like Privacy Badger</li>
+              <li>Consider using Firefox with Enhanced Tracking Protection</li>
+            </ul>
+            <a
+              href="https://www.eff.org/issues/online-behavioral-tracking"
+              target="_blank"
+              class="resource-link"
+            >
+              Learn more at EFF →
+            </a>
+          </div>
+
+          <div class="education-card">
+            <h3><span class="icon">🔍</span> Browser Fingerprinting</h3>
+            <p>
+              A technique that collects information about your browser, plugins,
+              screen size, and more to create a unique identifier.
+            </p>
+            <ul>
+              <li>Use Tor Browser for maximum privacy</li>
+              <li>Firefox has fingerprinting protection options</li>
+              <li>Disable JavaScript on sensitive sites</li>
+            </ul>
+            <a
+              href="https://coveryourtracks.eff.org/"
+              target="_blank"
+              class="resource-link"
+            >
+              Test your fingerprint at EFF →
+            </a>
+          </div>
+
+          <div class="education-card">
+            <h3><span class="icon">📍</span> Location Tracking</h3>
+            <p>
+              Websites can request your precise location through the Geolocation
+              API. This data reveals where you live, work, and travel.
+            </p>
+            <ul>
+              <li>Deny location requests unless necessary</li>
+              <li>Review site permissions in browser settings</li>
+              <li>Use a VPN to mask your IP-based location</li>
+            </ul>
+          </div>
+
+          <div class="education-card">
+            <h3><span class="icon">📊</span> Analytics & Tracking</h3>
+            <p>
+              Most websites use analytics services that collect data about your
+              behavior, including pages visited, time spent, and clicks.
+            </p>
+            <ul>
+              <li>Install uBlock Origin for comprehensive blocking</li>
+              <li>Use privacy-focused browsers like Brave</li>
+              <li>Enable Do Not Track (though rarely honored)</li>
+            </ul>
+          </div>
+
+          <div class="education-card">
+            <h3><span class="icon">📝</span> Form Tracking</h3>
+            <p>
+              Some sites track what you type in forms even before you submit
+              them. This can include sensitive information like emails or
+              searches.
+            </p>
+            <ul>
+              <li>Be cautious about what you type on untrusted sites</li>
+              <li>Use password managers to autofill instead of typing</li>
+              <li>Check for HTTPS before entering sensitive data</li>
+            </ul>
+          </div>
+
+          <div class="education-card">
+            <h3><span class="icon">🛡️</span> Recommended Tools</h3>
+            <p>Free tools and extensions to enhance your privacy:</p>
+            <ul>
+              <li><strong>uBlock Origin</strong> - Blocks ads and trackers</li>
+              <li>
+                <strong>Privacy Badger</strong> - Learns to block trackers
+              </li>
+              <li>
+                <strong>HTTPS Everywhere</strong> - Forces secure connections
+              </li>
+              <li><strong>Firefox</strong> - Privacy-focused browser</li>
+              <li><strong>DuckDuckGo</strong> - Private search engine</li>
+            </ul>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- Trackers Tab -->
-    <div id="trackers" class="tab-content">
-      <div id="all-trackers-list" class="tracker-list">
-        <div class="list-header">
-          <span>Tracker Domain</span>
-          <span>Category</span>
-          <span>Sites</span>
-        </div>
-        <div id="all-tracker-rows"></div>
-      </div>
-    </div>
-
-    <!-- Learn More Tab -->
-    <div id="learn" class="tab-content">
-      <div class="education-grid">
-        <div class="education-card">
-          <h3><span class="icon">🍪</span> Third-Party Cookies</h3>
-          <p>Cookies set by domains other than the one you're visiting. They allow advertisers to track you across different websites.</p>
-          <ul>
-            <li>Enable "Block third-party cookies" in browser settings</li>
-            <li>Use browser extensions like Privacy Badger</li>
-            <li>Consider using Firefox with Enhanced Tracking Protection</li>
-          </ul>
-          <a href="https://www.eff.org/issues/online-behavioral-tracking" target="_blank" class="resource-link">
-            Learn more at EFF →
-          </a>
-        </div>
-
-        <div class="education-card">
-          <h3><span class="icon">🔍</span> Browser Fingerprinting</h3>
-          <p>A technique that collects information about your browser, plugins, screen size, and more to create a unique identifier.</p>
-          <ul>
-            <li>Use Tor Browser for maximum privacy</li>
-            <li>Firefox has fingerprinting protection options</li>
-            <li>Disable JavaScript on sensitive sites</li>
-          </ul>
-          <a href="https://coveryourtracks.eff.org/" target="_blank" class="resource-link">
-            Test your fingerprint at EFF →
-          </a>
-        </div>
-
-        <div class="education-card">
-          <h3><span class="icon">📍</span> Location Tracking</h3>
-          <p>Websites can request your precise location through the Geolocation API. This data reveals where you live, work, and travel.</p>
-          <ul>
-            <li>Deny location requests unless necessary</li>
-            <li>Review site permissions in browser settings</li>
-            <li>Use a VPN to mask your IP-based location</li>
-          </ul>
-        </div>
-
-        <div class="education-card">
-          <h3><span class="icon">📊</span> Analytics & Tracking</h3>
-          <p>Most websites use analytics services that collect data about your behavior, including pages visited, time spent, and clicks.</p>
-          <ul>
-            <li>Install uBlock Origin for comprehensive blocking</li>
-            <li>Use privacy-focused browsers like Brave</li>
-            <li>Enable Do Not Track (though rarely honored)</li>
-          </ul>
-        </div>
-
-        <div class="education-card">
-          <h3><span class="icon">📝</span> Form Tracking</h3>
-          <p>Some sites track what you type in forms even before you submit them. This can include sensitive information like emails or searches.</p>
-          <ul>
-            <li>Be cautious about what you type on untrusted sites</li>
-            <li>Use password managers to autofill instead of typing</li>
-            <li>Check for HTTPS before entering sensitive data</li>
-          </ul>
-        </div>
-
-        <div class="education-card">
-          <h3><span class="icon">🛡️</span> Recommended Tools</h3>
-          <p>Free tools and extensions to enhance your privacy:</p>
-          <ul>
-            <li><strong>uBlock Origin</strong> - Blocks ads and trackers</li>
-            <li><strong>Privacy Badger</strong> - Learns to block trackers</li>
-            <li><strong>HTTPS Everywhere</strong> - Forces secure connections</li>
-            <li><strong>Firefox</strong> - Privacy-focused browser</li>
-            <li><strong>DuckDuckGo</strong> - Private search engine</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <script type="module" src="report.js"></script>
-</body>
-
+    <script type="module" src="report.js"></script>
+  </body>
 </html>
