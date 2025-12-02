@@ -1,6 +1,6 @@
 // Background Service Worker
 
-import { getTrackerInfo } from "./utils.js";
+import { getTrackerInfo, isWhiteListed } from "./utils.js";
 
 // Initialize storage on install
 chrome.runtime.onInstalled.addListener(() => {
@@ -144,6 +144,9 @@ chrome.webRequest.onBeforeRequest.addListener(
 
       trackerInfo = getTrackerInfo(trackerHost);
     } catch (e) {}
+
+    // Ignore white-listed domains
+    if (isWhiteListed(trackerHost)) return;
 
     const logEntry = {
       url: details.url,
@@ -361,6 +364,3 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     });
   }
 });
-
-// Export tracker info for other scripts
-self.KNOWN_TRACKERS = KNOWN_TRACKERS;

@@ -20,6 +20,7 @@ const KNOWN_TRACKERS = {
   "newrelic.com": { name: "New Relic", category: "analytics" },
   "sentry.io": { name: "Sentry", category: "analytics" },
   "crazyegg.com": { name: "Crazy Egg", category: "analytics" },
+  "analytics.google.com": { name: "Google Analytics", category: "analytics" },
 
   // Social
 
@@ -42,12 +43,17 @@ const KNOWN_TRACKERS = {
   "taboola.com": { name: "Taboola", category: "advertising" },
   "outbrain.com": { name: "Outbrain", category: "advertising" },
   "bing.com": { name: "Bing Ads", category: "advertising" },
+  "pixel.tapad.com": { name: "Tapad", category: "advertising" },
 };
 
 // List of white-listed domains that should not be detected as trackers.
 const WHITE_LIST = [
+  "gstatic.com",
+  "github.githubassets.com",
+  "fonts.googleapis.com",
   "fonts.gstatic.com",
-  "www.gstatic.com",
+  "a.thumbs.redditmedia.com",
+  "redditstatic.com",
   "github.githubassets.com",
 ];
 
@@ -69,4 +75,13 @@ function getTrackerCategory(domain) {
   return "unknown";
 }
 
-export { getTrackerInfo, getTrackerCategory, WHITE_LIST };
+function isWhiteListed(domain) {
+  for (const whiteListedDomain of WHITE_LIST) {
+    if (domain === whiteListedDomain || domain.includes(whiteListedDomain)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+export { getTrackerInfo, getTrackerCategory, isWhiteListed };
