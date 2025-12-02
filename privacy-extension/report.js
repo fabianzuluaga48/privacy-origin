@@ -1,6 +1,6 @@
 // Report Page Logic
 
-import { getTrackerCategory } from "./utils.js";
+import { getTrackerCategory, isWhiteListed } from "./utils.js";
 
 function formatNumber(num) {
   if (num >= 1000000) {
@@ -50,7 +50,7 @@ function loadData() {
       totalCookies: 0,
     };
 
-    const trackers = stats.trackers;
+    const trackers = stats.trackers;    
 
     // Convert to array and sort by sites reached
     const trackerArray = Object.keys(trackers)
@@ -59,9 +59,23 @@ function loadData() {
         count: trackers[domain].count,
         sites: trackers[domain].sites.length,
         isKnown: trackers[domain].isKnown || false,
+        isWhiteListed: trackers[domain].isWhiteListed || false,
       }))
-      .sort((a, b) => b.sites - a.sites);
+      .sort((a, b) => {
+        // 1. Known trackers first
+        if (a.isKnown !== b.isKnown) {
+          return a.isKnown ? -1 : 1;
+        }
 
+        // 2. Sort by sites reached (descending)
+        if (a.sites !== b.sites) {
+          return b.sites - a.sites;
+        }
+
+        // 3. Alphabetical by domain (ascending)
+        return a.domain.localeCompare(b.domain);
+      }).filter((tracker) => tracker.isWhiteListed === false);
+    
     // Total unique trackers
     const totalTrackers = trackerArray.length;
     document.getElementById("total-trackers").textContent =

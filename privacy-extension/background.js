@@ -51,6 +51,7 @@ function updateGlobalStats(trackerDomain, currentSite, isKnownTracker = false) {
         sites: [],
         isKnown: isKnownTracker,
         firstSeen: Date.now(),
+        isWhiteListed: isWhiteListed(trackerDomain),
       };
     }
     stats.trackers[trackerDomain].count++;
@@ -145,8 +146,6 @@ chrome.webRequest.onBeforeRequest.addListener(
       trackerInfo = getTrackerInfo(trackerHost);
     } catch (e) {}
 
-    // Ignore white-listed domains
-    if (isWhiteListed(trackerHost)) return;
 
     const logEntry = {
       url: details.url,

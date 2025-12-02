@@ -21,6 +21,9 @@ const KNOWN_TRACKERS = {
   "sentry.io": { name: "Sentry", category: "analytics" },
   "crazyegg.com": { name: "Crazy Egg", category: "analytics" },
   "analytics.google.com": { name: "Google Analytics", category: "analytics" },
+  "polaranalytics.com": { name: "Polar Analytics", category: "analytics" },
+  "analytics.yahoo.com": { name: "Yahoo Analytics", category: "analytics" },
+  "automizely-analytics.com": { name: "Automizely", category: "analytics" },
 
   // Social
 
@@ -43,7 +46,9 @@ const KNOWN_TRACKERS = {
   "taboola.com": { name: "Taboola", category: "advertising" },
   "outbrain.com": { name: "Outbrain", category: "advertising" },
   "bing.com": { name: "Bing Ads", category: "advertising" },
-  "pixel.tapad.com": { name: "Tapad", category: "advertising" },
+  "tapad.com": { name: "Tapad", category: "advertising" },
+  "googleadservices.com": { name: "Google Ads", category: "advertising" },
+  "adservice.google.com": { name: "Google Ads", category: "advertising" },
 };
 
 // List of white-listed domains that should not be detected as trackers.
@@ -77,7 +82,7 @@ function getTrackerCategory(domain) {
 
 function isWhiteListed(domain) {
   for (const whiteListedDomain of WHITE_LIST) {
-    if (domain === whiteListedDomain || domain.includes(whiteListedDomain)) {
+    if (domain.includes(whiteListedDomain)) {
       return true;
     }
   }
