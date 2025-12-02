@@ -15,14 +15,19 @@ const KNOWN_TRACKERS = {
     "hotjar.com": { "name": "Hotjar", "category": "analytics" },
     "mixpanel.com": { "name": "Mixpanel", "category": "analytics" },
     "segment.io": { "name": "Segment", "category": "analytics" },
+    "segment.com": { "name": 'Segment', "category": "analytics" },
     "clarity.ms": { "name": "Microsoft Clarity", "category": "analytics" },
     "omtrdc.net": { "name": "Adobe Analytics", "category": "analytics" },
+    "quantserve.com": { "name": "Quantcast", "category": "analytics" },
+    "newrelic.com": { "name": "New Relic", "category": "analytics" },
+    "sentry.io": { "name": "Sentry", "category": "analytics" },
+    "crazyegg.com": { "name": "Crazy Egg", "category": "analytics" },
 
     // Social
 
     "facebook.net": { "name": "Facebook Pixel", "category": "social" },
     "facebook.com": { "name": "Facebook", "category": "social" },
-    "px.ads.linkedin.com": { "name": "LinkedIn Insight Tag", "category": "social" },
+    "linkedin.com": { "name": "LinkedIn Insight Tag", "category": "social" },
     "twitter.com": { "name": "Twitter/X Pixel", "category": "social" },
     "tiktok.com": { "name": "TikTok Pixel", "category": "social" },
     "snapchat.com": { "name": "Snapchat Pixel", "category": "social" },
@@ -37,9 +42,10 @@ const KNOWN_TRACKERS = {
     "criteo.com": { "name": "Criteo", "category": "advertising" },
     "adsrvr.org": { "name": "The Trade Desk", "category": "advertising" },
     "taboola.com": { "name": "Taboola", "category": "advertising" },
-    "outbrain.com": { "name": "Outbrain", "category": "advertising" }
-  };
-  
+    "outbrain.com": { "name": "Outbrain", "category": "advertising" },
+    "bing.com": { "name": "Bing Ads", "category": "advertising" },
+};
+
   function getTrackerCategory(domain) {
     for (const [trackerDomain, info] of Object.entries(KNOWN_TRACKERS)) {
       if (domain.includes(trackerDomain)) {
