@@ -127,7 +127,7 @@ function renderNetworkGraph(buckets, labels, bucketSizeMs) {
     container.appendChild(bar);
   });
 
-  // Compute total and average from buckets themselves
+  //compute total and average from buckets themselves
   const total = buckets.reduce((sum, c) => sum + c, 0);
   const avgPerBucket = (total / buckets.length).toFixed(1);
   const first = labels[0] || "";
@@ -147,7 +147,7 @@ function updateUI() {
     const currentTab = tabs[0];
     const currentTabId = currentTab.id;
 
-    // Display current site
+    //display current site
     try {
       const url = new URL(currentTab.url);
       document.getElementById("current-site").textContent = url.hostname;
@@ -173,11 +173,10 @@ function updateUI() {
         const fingerprinting = filterByTab(result.fingerprintingAttempts);
         const formData = filterByTab(result.formData);
 
-        // Count third-party requests
+        //count third-party requests
         const thirdPartyRequests = requests.filter((r) => r.isThirdParty);
         const thirdPartyCookies = cookies.filter((c) => c.isThirdParty);
 
-        // Update counts
         updateCount("network-count", requests.length, {
           warning: 100,
           alert: 200,
@@ -194,7 +193,7 @@ function updateUI() {
           alert: 3,
         });
 
-        // Find known trackers
+        //find known trackers
         const detectedTrackers = new Map();
         thirdPartyRequests.forEach((req) => {
           try {
